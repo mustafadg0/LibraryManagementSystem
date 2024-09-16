@@ -16,48 +16,64 @@ namespace LibraryManagementSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Book>> GetBooks()
+        public async Task<IActionResult> GetBooks()
         {
-            return await _bookService.GetBooksAsync();
+            var result = await _bookService.GetBooksAsync();
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<IActionResult> GetBook(int id)
         {
-            var book = await _bookService.GetBookAsync(id);
-            if (book == null)
-                return NotFound();
-            return book;
+            var result = await _bookService.GetBookAsync(id);
+            if (!result.Success)
+            {
+                return NotFound(result.Message);
+            }
+
+            return Ok(result);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddBook([FromBody] Book book)
         {
-            await _bookService.AddBookAsync(book);
-            return Ok();
+            var result = await _bookService.AddBookAsync(book);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBook(int id, [FromBody] Book book)
         {
-            var existingBook = await _bookService.GetBookAsync(id);
-            if (existingBook == null)
-                return NotFound();
-
             book.Id = id;
-            await _bookService.UpdateBookAsync(book);
-            return Ok();
+            var result = await _bookService.UpdateBookAsync(book);
+            if (!result.Success)
+            {
+                return NotFound(result.Message);
+            }
+
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            var book = await _bookService.GetBookAsync(id);
-            if (book == null)
-                return NotFound();
+            var result = await _bookService.DeleteBookAsync(id);
+            if (!result.Success)
+            {
+                return NotFound(result.Message);
+            }
 
-            await _bookService.DeleteBookAsync(id);
-            return Ok();
+            return Ok(result);
         }
     }
 }
