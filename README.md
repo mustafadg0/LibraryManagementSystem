@@ -12,6 +12,7 @@ The project supports basic CRUD operations for managing a library's book invento
 - **Swagger UI**: API documentation and testing directly from the browser.
 - **Logging**: Console and file logging using the built-in ASP.NET Core logging framework.
 - **Dependency Injection**: Loose coupling of components via dependency injection.
+- **Standardized API Responses with `Result<T>`**: API responses are wrapped in a standardized format with success status and messages.
 
 ## Technologies Used
 
@@ -86,4 +87,39 @@ To run this project locally, you need the following installed on your system:
 The project follows a typical layered architecture:
 
 - **Entities**: Contains domain models (e.g., `Book`).
+- **Business**: Contains the service layer responsible for business logic and interaction between the API and data layers.
+- **Data**: Contains the repository layer that handles data access and interaction with the database.
+- **WebAPI**: Contains the API layer that handles HTTP requests and responses.
 
+## Result<T> Class for Standardized API Responses
+
+The project includes a `Result<T>` class which standardizes API responses by wrapping the actual data and providing additional fields such as success status and messages. This ensures consistency in API responses and improves error handling.
+
+### Example of Result<T>:
+```csharp
+public class Result<T>
+{
+    public bool Success { get; set; }
+    public string Message { get; set; }
+    public T Data { get; set; }
+
+    public static Result<T> SuccessResult(T data, string message = "")
+    {
+        return new Result<T>
+        {
+            Success = true,
+            Data = data,
+            Message = message
+        };
+    }
+
+    public static Result<T> ErrorResult(string message)
+    {
+        return new Result<T>
+        {
+            Success = false,
+            Data = default(T),
+            Message = message
+        };
+    }
+}
