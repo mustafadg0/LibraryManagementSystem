@@ -19,6 +19,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LibraryManagementSystem.Business\LibraryManagementSystem.Business.csproj" />
+    <ProjectReference Include="..\LibraryManagementSystem.Common\LibraryManagementSystem.Common.csproj" />
+    <ProjectReference Include="..\LibraryManagementSystem.Messaging\LibraryManagementSystem.Messaging.csproj" />
   </ItemGroup>
 
 </Project>

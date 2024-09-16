@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibraryManagementSystem.Entities
+namespace LibraryManagementSystem.Messaging
 {
     public class RabbitMQConsumer
     {
