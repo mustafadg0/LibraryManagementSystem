@@ -1,24 +1,26 @@
 # Library Management System
 
-Library Management System is a simple web API application built using ASP.NET Core, Entity Framework Core, and SQL Server. 
-It demonstrates a layered architecture with clean separation of concerns, dependency injection, and logging. 
-The project supports basic CRUD operations for managing a library's book inventory, including adding, updating, deleting, and listing books.
+Library Management System is a simple web API application built using **ASP.NET Core**, **Entity Framework Core**, and **SQL Server**. It demonstrates a layered architecture with clean separation of concerns, dependency injection, and logging. The project supports basic CRUD operations for managing a library's book inventory, including adding, updating, deleting, and listing books.
+
+Additionally, the project leverages **RabbitMQ** to implement a microservices architecture, enabling asynchronous messaging between services.
 
 ## Features
 
 - **CRUD Operations**: Manage books with Create, Read, Update, and Delete endpoints.
-- **Layered Architecture**: Separation of business logic, data access, and API layers.
+- **Layered Architecture**: Separation of business logic, data access, messaging, and API layers.
 - **Entity Framework Core**: Integration with SQL Server for database operations.
 - **Swagger UI**: API documentation and testing directly from the browser.
 - **Logging**: Console and file logging using the built-in ASP.NET Core logging framework.
 - **Dependency Injection**: Loose coupling of components via dependency injection.
 - **Standardized API Responses with `Result<T>`**: API responses are wrapped in a standardized format with success status and messages.
+- **Microservices with RabbitMQ**: The project utilizes RabbitMQ for asynchronous communication between microservices.
 
 ## Technologies Used
 
 - **ASP.NET Core 7.0**
 - **Entity Framework Core**
 - **SQL Server**
+- **RabbitMQ**: For messaging between microservices.
 - **Swagger**
 
 ## Getting Started
@@ -29,6 +31,7 @@ To run this project locally, you need the following installed on your system:
 
 - .NET 7.0 SDK or later
 - SQL Server (LocalDB or Full SQL Server)
+- RabbitMQ (Installed locally or via Docker)
 - Git
 
 ### Installation
@@ -60,13 +63,19 @@ To run this project locally, you need the following installed on your system:
     dotnet ef database update
     ```
 
-5. Run the application:
+5. Run RabbitMQ locally or via Docker:
+
+    ```bash
+    docker run -d --hostname rabbitmq --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management
+    ```
+
+6. Run the application:
 
     ```bash
     dotnet run
     ```
 
-6. Open your browser and navigate to:
+7. Open your browser and navigate to:
 
     ```
     https://localhost:5001/swagger/index.html
@@ -78,7 +87,7 @@ To run this project locally, you need the following installed on your system:
 
 - `GET /api/books` - Get a list of all books
 - `GET /api/books/{id}` - Get a book by its ID
-- `POST /api/books` - Add a new book
+- `POST /api/books` - Add a new book (Triggers RabbitMQ message)
 - `PUT /api/books/{id}` - Update an existing book
 - `DELETE /api/books/{id}` - Delete a book by its ID
 
@@ -87,39 +96,17 @@ To run this project locally, you need the following installed on your system:
 The project follows a typical layered architecture:
 
 - **Entities**: Contains domain models (e.g., `Book`).
-- **Business**: Contains the service layer responsible for business logic and interaction between the API and data layers.
+- **Business**: Contains the service layer responsible for business logic and interaction between the API and data layers. Also, it manages communication with RabbitMQ.
 - **Data**: Contains the repository layer that handles data access and interaction with the database.
+- **Messaging**: Manages communication between services using RabbitMQ for asynchronous message passing.
 - **WebAPI**: Contains the API layer that handles HTTP requests and responses.
+
+## Microservices with RabbitMQ
+
+The project utilizes **RabbitMQ** to implement microservices for asynchronous communication. This is done by using a **producer-consumer model**:
+- **RabbitMQPublisher**: When a new book is added to the library, a message is published to a message queue via RabbitMQ.
+- **RabbitMQConsumer**: A separate service listens to the queue and processes messages asynchronously. This could be used for notifications, logging, or further processing.
 
 ## Result<T> Class for Standardized API Responses
 
 The project includes a `Result<T>` class which standardizes API responses by wrapping the actual data and providing additional fields such as success status and messages. This ensures consistency in API responses and improves error handling.
-
-### Example of Result<T>:
-```csharp
-public class Result<T>
-{
-    public bool Success { get; set; }
-    public string Message { get; set; }
-    public T Data { get; set; }
-
-    public static Result<T> SuccessResult(T data, string message = "")
-    {
-        return new Result<T>
-        {
-            Success = true,
-            Data = data,
-            Message = message
-        };
-    }
-
-    public static Result<T> ErrorResult(string message)
-    {
-        return new Result<T>
-        {
-            Success = false,
-            Data = default(T),
-            Message = message
-        };
-    }
-}
