@@ -1,6 +1,7 @@
 ﻿using LibraryManagementSystem.Common;
 using LibraryManagementSystem.Data;
 using LibraryManagementSystem.Entities;
+using LibraryManagementSystem.Messaging;
 
 namespace LibraryManagementSystem.Business
 {
@@ -51,6 +52,8 @@ namespace LibraryManagementSystem.Business
             try
             {
                 await _bookRepository.AddBookAsync(book);
+                var rabbitMQPublisher = new RabbitMQPublisher();
+                rabbitMQPublisher.PublishMessage($"New book added: {book.Title}");
                 return Result<Book>.SuccessResult(book, "Book added successfully.");
             }
             catch (Exception ex)

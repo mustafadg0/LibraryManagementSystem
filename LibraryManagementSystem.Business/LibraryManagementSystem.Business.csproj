@@ -7,9 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LibraryManagementSystem.Common\LibraryManagementSystem.Common.csproj" />
     <ProjectReference Include="..\LibraryManagementSystem.Data\LibraryManagementSystem.Data.csproj" />
     <ProjectReference Include="..\LibraryManagementSystem.Entities\LibraryManagementSystem.Entities.csproj" />
+    <ProjectReference Include="..\LibraryManagementSystem.Messaging\LibraryManagementSystem.Messaging.csproj" />
   </ItemGroup>
 
 </Project>
